@@ -1,46 +1,37 @@
 "use client";
 import React, { useState } from "react";
-
-const SignupForm = () => {
+import { signIn } from "next-auth/react";
+const LoginForm = () => {
   const [Email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rpassword, setRPassword] = useState("");
-  const [userName, setUserName] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(Email, password, rpassword, userName);
-    if (password === rpassword) {
-      if (Email && userName) {
-        try {
-          const response = await fetch("/api/Signup", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ Email, password, userName }),
-          });
+    console.log(Email, password);
+    if (Email && password) {
+      try {
+        const response = await fetch("/api/Login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ Email, password }),
+        });
+        console.log(response);
+        if (response.ok) {
+          console.log("User Login successfully");
+          const res = await response.json();
 
-          if (response.ok) {
-            console.log("User registered successfully");
-          } else if (response.status == 402) {
-            console.log("user already exists");
-            alert("Email already exists");
-          } else if (response.status == 403) {
-            alert("username already exists");
-          } else {
-            console.log(response.status);
-            console.error("Error registering user");
-          }
-        } catch (error) {
-          console.error(error);
+          console.log(res);
+          alert("login successful");
+        } else if (response.status == 401) {
+          alert("credentials not matched");
         }
-      } else {
-        alert("all fields are required");
+      } catch (error) {
+        console.error(error);
       }
     } else {
-      console.log("password mismatch");
-      alert("password mismatch");
+      alert("Both fields are required");
     }
   };
 
@@ -65,26 +56,9 @@ const SignupForm = () => {
             relative z-10"
             >
               <p className="w-full text-4xl font-medium text-center leading-snug font-serif">
-                Sign up for an account
+                Login
               </p>
               <div className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
-                <div className="relative">
-                  <p
-                    className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                  absolute"
-                  >
-                    Username
-                  </p>
-                  <input
-                    placeholder="John"
-                    type="text"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    className="border placeholder-gray-400 focus:outline-none
-                  focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                  border-gray-300 rounded-md"
-                  />
-                </div>
                 <div className="relative">
                   <p
                     className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
@@ -116,23 +90,7 @@ const SignupForm = () => {
                   border-gray-300 rounded-md"
                   />
                 </div>
-                <div className="relative">
-                  <p
-                    className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                  absolute"
-                  >
-                    Re-Enter Password
-                  </p>
-                  <input
-                    placeholder="Password"
-                    type="password"
-                    value={rpassword}
-                    onChange={(e) => setRPassword(e.target.value)}
-                    className="border placeholder-gray-400 focus:outline-none
-                  focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                  border-gray-300 rounded-md"
-                  />
-                </div>
+
                 <div className="relative" onClick={handleSubmit}>
                   <a
                     className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500
@@ -334,4 +292,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default LoginForm;
